@@ -1,10 +1,17 @@
+<p style="text-align: center;">
+  <a><img src="doc/logo.png" alt="GoDS"></a>
+</p>
+
+---
+
 # GoDS
 
-__Simple, Useful, Efficient__
+__Simple, Useful, Efficient__, __GoDS__ is God of Data Structures.
 
 ## Introduction
 
-GoDS is a library of data structures written in Go.
+GoDS is a library of data structures written in Go. Here you can learn and use different data structures in interesting
+ways.
 
 ## Packages
 
