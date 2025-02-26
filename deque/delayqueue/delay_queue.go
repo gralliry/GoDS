@@ -1,68 +1,95 @@
 package delayqueue
 
 import (
-	"GoDS/heap"
+	"github.com/gralliry/gods/heap"
+	"math"
 	"sync"
 	"time"
 )
 
-type dqNode[V any] struct {
-	value V
-	time  time.Time
+type delayqueueNode[V any] struct {
+	value      V
+	expireTime time.Time
 }
 
 type DelayQueue[V any] struct {
-	input  chan *dqNode[V]
-	output chan V
-	once   sync.Once
-	root   *heap.Heap[*dqNode[V]]
+	input     chan *delayqueueNode[V]
+	output    chan V
+	onceStart sync.Once
+	onceClose sync.Once
+	root      *heap.Heap[*delayqueueNode[V]]
 }
 
-func New[V any]() *DelayQueue[V] {
+func NewDelayQueue[V any]() *DelayQueue[V] {
 	dq := &DelayQueue[V]{
-		root: heap.New[*dqNode[V]](func(a, b *dqNode[V]) bool {
-			return a.time.Before(b.time)
+		root: heap.NewHeap[*delayqueueNode[V]](func(a, b *delayqueueNode[V]) bool {
+			return a.expireTime.Before(b.expireTime)
 		}),
-		input:  make(chan *dqNode[V], 100),
+		input:  make(chan *delayqueueNode[V], 100),
 		output: make(chan V, 100),
 	}
 	return dq
 }
 
-func (q *DelayQueue[V]) Pop() V {
-	return <-q.output
+func (q *DelayQueue[V]) Pop() (value V, ok bool) {
+	value, ok = <-q.output
+	return value, ok
 }
 
-func (q *DelayQueue[V]) Push(value V, time time.Time) {
-	q.input <- &dqNode[V]{
-		value: value,
-		time:  time,
+func (q *DelayQueue[V]) Push(value V, exTime time.Time) (ok bool) {
+	select {
+	case q.input <- &delayqueueNode[V]{
+		value:      value,
+		expireTime: exTime,
+	}:
+		return true
+	default:
+		return false
 	}
 }
 
 func (q *DelayQueue[V]) Start() {
-	q.once.Do(func() {
+	q.onceStart.Do(func() {
 		go func() {
+			var (
+				timegap   time.Duration
+				dqn, node *delayqueueNode[V]
+				ok        bool
+			)
 			for {
-				var timegap time.Duration
-				dqn, isEmpty := q.root.Top()
-				if isEmpty {
-					timegap = 0xfffffffffffffff
+				if dqn, ok = q.root.Top(); ok {
+					timegap = dqn.expireTime.Sub(time.Now())
+					if timegap < 0 {
+						q.output <- dqn.value
+						q.root.Pop()
+						continue
+					}
 				} else {
-					timegap = dqn.time.Sub(time.Now())
+					timegap = math.MaxInt64
 				}
 				select {
 				case <-time.After(timegap):
-					dqn, _ := q.root.Pop()
-					q.output <- dqn.value
-				case dqn := <-q.input:
-					if dqn.time.Sub(time.Now()) < 0 {
-						q.output <- dqn.value
+					if node, ok = q.root.Pop(); ok {
+						q.output <- node.value
+					}
+				case node, ok = <-q.input:
+					if !ok {
+						break
+					}
+					if node.expireTime.Before(time.Now()) {
+						q.output <- node.value
 					} else {
-						q.root.Push(dqn)
+						q.root.Push(node)
 					}
 				}
 			}
 		}()
+	})
+}
+
+func (q *DelayQueue[V]) Close() {
+	q.onceClose.Do(func() {
+		close(q.input)
+		close(q.output)
 	})
 }

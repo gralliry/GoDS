@@ -16,6 +16,7 @@ GoDS is a library of data structures written in Go.
     - [Queue](deque/queue)
     - [Stack](deque/stack)
     - [BlockQueue](deque/blockqueue)
+    - [CircularQueue](deque/circularqueue)
     - [DelayQueue](deque/delayqueue)
     - [PriorityQueue](deque/priorityqueue)
 
@@ -34,5 +35,6 @@ GoDS is a library of data structures written in Go.
     - [AtomicMap](sync/atomicmap)
     - [AtomicSet](sync/atomicset)
     - [GradeMutex](sync/grademutex)
-  
+
 * tree
+    - [AVLTree](tree/avltree)

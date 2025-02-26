@@ -1,18 +1,18 @@
 package queue
 
-type qNode[V any] struct {
+type queueNode[V any] struct {
 	value V
-	next  *qNode[V]
+	next  *queueNode[V]
 }
 
 type Queue[V any] struct {
-	head *qNode[V]
-	tail *qNode[V]
+	head *queueNode[V]
+	tail *queueNode[V]
 	size int
 }
 
-func New[V any]() *Queue[V] {
-	sentinel := &qNode[V]{}
+func NewQueue[V any]() *Queue[V] {
+	sentinel := &queueNode[V]{}
 	return &Queue[V]{
 		head: sentinel,
 		tail: sentinel,
@@ -36,7 +36,7 @@ func (q *Queue[V]) Peek() (V, bool) {
 }
 
 func (q *Queue[V]) Push(value V) {
-	node := &qNode[V]{value: value}
+	node := &queueNode[V]{value: value}
 	q.tail.next = node
 	q.tail = node
 	q.size++

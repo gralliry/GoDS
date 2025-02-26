@@ -9,7 +9,7 @@ type BlockQueue[V any] struct {
 	queue chan V
 }
 
-func New[V any](cap int) *BlockQueue[V] {
+func NewBlockQueue[V any](cap int) *BlockQueue[V] {
 	return &BlockQueue[V]{
 		queue: make(chan V, cap),
 	}

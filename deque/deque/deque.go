@@ -1,18 +1,18 @@
 package deque
 
-type dNode[V any] struct {
-	prev  *dNode[V]
-	next  *dNode[V]
+type dequeNode[V any] struct {
+	prev  *dequeNode[V]
+	next  *dequeNode[V]
 	value V
 }
 
 type Deque[V any] struct {
 	size int
-	head dNode[V]
-	tail dNode[V]
+	head dequeNode[V]
+	tail dequeNode[V]
 }
 
-func New[V any]() *Deque[V] {
+func NewDeque[V any]() *Deque[V] {
 	d := &Deque[V]{size: 0}
 	d.head.next = &d.tail
 	d.head.prev = nil
@@ -52,7 +52,7 @@ func (d *Deque[V]) Back() (value V, ok bool) {
 }
 
 func (d *Deque[V]) PushFront(value V) {
-	node := &dNode[V]{value: value}
+	node := &dequeNode[V]{value: value}
 	d.head.next.prev = node
 	node.next = d.head.next
 	d.head.next = node
@@ -61,7 +61,7 @@ func (d *Deque[V]) PushFront(value V) {
 }
 
 func (d *Deque[V]) PushBack(value V) {
-	node := &dNode[V]{value: value}
+	node := &dequeNode[V]{value: value}
 	d.tail.prev.next = node
 	node.prev = d.tail.prev
 	d.tail.prev = node

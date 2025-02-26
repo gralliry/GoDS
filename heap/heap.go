@@ -5,7 +5,7 @@ type Heap[V any] struct {
 	data    []V
 }
 
-func New[V any](compare func(a, b V) bool) *Heap[V] {
+func NewHeap[V any](compare func(a, b V) bool) *Heap[V] {
 	return &Heap[V]{
 		compare: compare,
 		data:    make([]V, 1, 100),
@@ -22,8 +22,7 @@ func (h *Heap[V]) Empty() bool {
 
 func (h *Heap[V]) Push(value V) {
 	h.data = append(h.data, value)
-	size := len(h.data) - 1
-	h.up(size)
+	h.up(len(h.data) - 1)
 }
 
 func (h *Heap[V]) Pop() (value V, ok bool) {
@@ -38,11 +37,11 @@ func (h *Heap[V]) Pop() (value V, ok bool) {
 	return h.data[0], true
 }
 
-func (h *Heap[V]) Top() (value V, empty bool) {
+func (h *Heap[V]) Top() (value V, ok bool) {
 	if len(h.data) == 1 {
-		return h.data[0], true
+		return h.data[0], false
 	}
-	return h.data[1], false
+	return h.data[1], true
 }
 
 func (h *Heap[V]) up(index int) {

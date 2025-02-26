@@ -1,17 +1,17 @@
 package stack
 
-type sNode[V any] struct {
-	next  *sNode[V]
+type stackNode[V any] struct {
+	next  *stackNode[V]
 	value V
 }
 
 type Stack[V any] struct {
 	size int
-	head sNode[V]
+	head stackNode[V]
 }
 
-func New[V any]() *Stack[V] {
-	s := &Stack[V]{head: sNode[V]{}, size: 0}
+func NewStack[V any]() *Stack[V] {
+	s := &Stack[V]{head: stackNode[V]{}, size: 0}
 	s.head.next = nil
 	return s
 }
@@ -37,7 +37,7 @@ func (s *Stack[V]) Clear() {
 }
 
 func (s *Stack[V]) Push(value V) {
-	node := &sNode[V]{value: value}
+	node := &stackNode[V]{value: value}
 	node.next = s.head.next
 	s.head.next = node
 	s.size++

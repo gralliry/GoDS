@@ -3,7 +3,7 @@ package heap
 import "testing"
 
 func TestHeap(t *testing.T) {
-	heap := New[int](func(a, b int) bool {
+	heap := NewHeap[int](func(a, b int) bool {
 		return a < b
 	})
 	heap.Push(1)
